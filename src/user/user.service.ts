@@ -2,18 +2,34 @@ import { MongoDbServices } from "@mayajs/mongo";
 import { Service } from "@mayajs/core";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { Document } from "mongoose";
+
+interface ServiceUserReturn {
+  status: string;
+  message: string;
+  data: Document[] | never[];
+}
+
+interface CreateBody {
+  password: string;
+}
+
+type ReponseType = Promise<ServiceUserReturn>;
 
 @Service()
 export class UsersServices {
   constructor(private mongo: MongoDbServices) {}
 
-  async create(body: any) {
+  get model() {
+    const db = this.mongo.database("test");
+    return db.instance.model("User");
+  }
+
+  async create(body: CreateBody): ReponseType {
     try {
-      const db = this.mongo.database("test");
-      const model = db.instance.model("User");
-      const { password, ...data } = body;
-      const pw = this.setPassword(password);
-      const user = await model.create({ password: pw, ...data });
+      const { password: pw, ...data } = body;
+      const password = this.setPassword(pw);
+      const user = await this.model.create({ ...data, password });
       return { status: "success", message: "Successfuly created user", data: [user] };
     } catch (error) {
       return { status: "error", message: error.errmsg ? error.errmsg : error.toString(), data: [] };
@@ -22,10 +38,8 @@ export class UsersServices {
 
   async login(body: any) {
     try {
-      const db = this.mongo.database("test");
-      const model = db.instance.model("User");
       const { username, password } = body;
-      const user: any = await model.findOne({ username });
+      const user: any = await this.model.findOne({ username });
       if (!user) {
         throw { errmsg: "Invalid username or password" };
       }
@@ -44,9 +58,7 @@ export class UsersServices {
   // Update user by id
   async update(id: string, body: any) {
     try {
-      const db = this.mongo.database("test");
-      const model = db.instance.model("User");
-      const user = await model.findByIdAndUpdate(id, body, { new: true });
+      const user = await this.model.findByIdAndUpdate(id, body, { new: true });
       if (!user) {
         throw { errmsg: "User not found" };
       }
@@ -59,9 +71,7 @@ export class UsersServices {
   // Delete user by id
   async delete(id: string) {
     try {
-      const db = this.mongo.database("test");
-      const model = db.instance.model("User");
-      const user = await model.findByIdAndDelete(id);
+      const user = await this.model.findByIdAndDelete(id);
       if (!user) {
         throw { errmsg: "User not found" };
       }
@@ -74,9 +84,7 @@ export class UsersServices {
   // Get user by id
   async getById(id: string) {
     try {
-      const db = this.mongo.database("test");
-      const model = db.instance.model("User");
-      const user = await model.findById(id);
+      const user = await this.model.findById(id);
       if (!user) {
         throw { errmsg: "User not found" };
       }
@@ -88,11 +96,18 @@ export class UsersServices {
 
   // Get all users
   async getAll() {
+    const person: { [x: string]: string } = {};
+    const name = "mack";
+
+    person[name] = "mau";
+
+    console.log(person);
+
     try {
       const db = this.mongo.database("test");
       const model = db.instance.model("User");
       const user = await model.find();
-      return { status: "success", message: "Successfuly get all users", data: user };
+      return { status: "success", message: "Successfuly get all users", data: [user] };
     } catch (error) {
       return { status: "error", message: error.toString(), data: [] };
     }

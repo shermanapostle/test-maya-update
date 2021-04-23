@@ -2,13 +2,17 @@ import { Get, Patch, Post, Delete, Put } from "@mayajs/common";
 import { Controller } from "@mayajs/core";
 import { MayaJsContext } from "@mayajs/router";
 import { UsersServices } from "./user.service";
+import bodyParser from "body-parser";
+
+const bodyparser = [bodyParser.urlencoded({ extended: false }), bodyParser.json()];
 
 @Controller()
 export class UsersController {
   constructor(private services: UsersServices) {}
 
-  @Post({ path: "/", middlewares: [] })
+  @Post({ path: "/", middlewares: [...bodyparser] })
   async create({ body }: MayaJsContext): Promise<any> {
+    console.log(body);
     const result = await this.services.create(body);
     return result;
   }

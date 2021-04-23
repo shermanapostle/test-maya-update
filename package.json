@@ -14,8 +14,9 @@
     "@mayajs/common": "^0.4.0",
     "@mayajs/core": "^0.5.1",
     "@mayajs/mongo": "^0.5.0",
-    "@mayajs/router": "^0.4.1",
+    "@mayajs/router": "^0.5.0-rc1",
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.4",
     "mongoose-paginate": "^5.0.3"
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@mayajs/cli": "^0.5.0",
     "@types/bcryptjs": "^2.4.2",
+    "@types/body-parser": "^1.19.0",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/mongoose": "^5.10.5",
     "@types/mongoose-paginate": "^5.0.8",
