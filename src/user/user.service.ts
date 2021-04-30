@@ -25,6 +25,31 @@ export class UsersServices {
     return db.instance.model("User");
   }
 
+  // Get user by id
+  async getById(id: string) {
+    try {
+      const user = await this.model.findById(id);
+      if (!user) {
+        throw { errmsg: "User not found" };
+      }
+      return { status: "success", message: "Successfuly get user", data: [user] };
+    } catch (error) {
+      return { status: "error", message: error.errmsg ? error.errmsg : error.toString(), data: [] };
+    }
+  }
+
+  // Get all users
+  async getAll() {
+    try {
+      const db = this.mongo.database("test");
+      const model = db.instance.model("User");
+      const user = await model.find();
+      return { status: "success", message: "Successfuly get all users", data: [user] };
+    } catch (error) {
+      return { status: "error", message: error.toString(), data: [] };
+    }
+  }
+
   async create(body: CreateBody): ReponseType {
     try {
       const { password: pw, ...data } = body;
@@ -78,38 +103,6 @@ export class UsersServices {
       return { status: "success", message: "Successfuly deleted user", data: [] };
     } catch (error) {
       return { status: "error", message: error.errmsg ? error.errmsg : error.toString(), data: [] };
-    }
-  }
-
-  // Get user by id
-  async getById(id: string) {
-    try {
-      const user = await this.model.findById(id);
-      if (!user) {
-        throw { errmsg: "User not found" };
-      }
-      return { status: "success", message: "Successfuly get user", data: [user] };
-    } catch (error) {
-      return { status: "error", message: error.errmsg ? error.errmsg : error.toString(), data: [] };
-    }
-  }
-
-  // Get all users
-  async getAll() {
-    const person: { [x: string]: string } = {};
-    const name = "mack";
-
-    person[name] = "mau";
-
-    console.log(person);
-
-    try {
-      const db = this.mongo.database("test");
-      const model = db.instance.model("User");
-      const user = await model.find();
-      return { status: "success", message: "Successfuly get all users", data: [user] };
-    } catch (error) {
-      return { status: "error", message: error.toString(), data: [] };
     }
   }
 
